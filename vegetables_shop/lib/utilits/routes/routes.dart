@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const routeDuration = Duration(milliseconds: 1200);
+const routeDuration = Duration(milliseconds: 300);
 
 class SlideRightRoute extends PageRouteBuilder {
   final Widget page;
@@ -10,7 +10,7 @@ class SlideRightRoute extends PageRouteBuilder {
             pageBuilder: (BuildContext context, Animation<double> animation,
                     Animation<double> secondaryAnimation) =>
                 page,
-            transitionDuration: const Duration(milliseconds: 300),
+            transitionDuration: routeDuration,
             transitionsBuilder: (BuildContext context,
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
