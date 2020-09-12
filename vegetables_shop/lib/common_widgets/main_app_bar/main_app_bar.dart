@@ -128,7 +128,7 @@ class _ClearSearchButton extends StatelessWidget {
           onTap();
         }
       },
-      child: Icon(Icons.close),
+      child: const Icon(Icons.close),
     );
   }
 }
