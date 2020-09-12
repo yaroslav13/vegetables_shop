@@ -86,7 +86,7 @@ abstract class BaseState<T extends BaseScreen, Bloc extends BaseBloc>
     super.dispose();
   }
 
-  void showSnackbar(String message) {
+  void showSnackBar(String message) {
     if (message != null) {
       scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(message),
