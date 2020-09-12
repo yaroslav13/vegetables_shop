@@ -31,7 +31,7 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
                 _DrawerSections(
                   imagePath: AppImages.news,
                   text: AppStrings.news,
-                  onTap: () => _navigateToNewsPage(context),
+                  onTap: _navigateToNewsPage,
                 ),
                 _DrawerSections(
                     imagePath: AppImages.telephone,
@@ -57,7 +57,7 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
     }
   }
 
-  _navigateToNewsPage(BuildContext context) =>
+  _navigateToNewsPage() =>
       Navigator.of(context).push(SlideRightRoute(page: NewsPage()));
 }
 
