@@ -21,22 +21,7 @@ class HomeScreen extends BaseScreen {
 class _HomeScreenState extends BaseState<HomeScreen, HomeBloc> {
   ValueNotifier<int> notifier;
 
-  @override
-  void initState() {
-    super.initState();
-    notifier = ValueNotifier(startTab);
-  }
-
-  @override
-  void dispose() {
-    notifier.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget drawer() => AppDrawer();
-
-  var _tabs = <BottomNavigationBarItem>[
+  List<BottomNavigationBarItem> _tabs = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
         icon: ImageIcon(AssetImage(AppImages.bananas)),
         title: Text(AppStrings.fruits)),
@@ -59,12 +44,35 @@ class _HomeScreenState extends BaseState<HomeScreen, HomeBloc> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    notifier = ValueNotifier(startTab);
+  }
+
+  @override
   Widget body() => _TabPages(
         notifier: notifier,
       );
 
   @override
-  double get drawerEdgeDragWidth => 0.0;
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
+
+  @override
+  HomeBloc provideBloc() => HomeBloc();
+
+  @override
+  Widget drawer() => AppDrawer();
+
+  @override
+  Widget floatingActionButton() => ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (BuildContext context, value, _) {
+          return _getFloatingTab(value);
+        },
+      );
 
   @override
   Widget bottomNavigationBar() => ValueListenableBuilder<int>(
@@ -82,6 +90,9 @@ class _HomeScreenState extends BaseState<HomeScreen, HomeBloc> {
           );
         },
       );
+
+  @override
+  double get drawerEdgeDragWidth => 0.0;
 
   Widget _getFloatingTab(int currentIndex) {
     var padding = MediaQuery.of(context).viewPadding.bottom;
@@ -113,17 +124,6 @@ class _HomeScreenState extends BaseState<HomeScreen, HomeBloc> {
       return const SizedBox.shrink();
     }
   }
-
-  @override
-  Widget floatingActionButton() => ValueListenableBuilder<int>(
-        valueListenable: notifier,
-        builder: (BuildContext context, value, _) {
-          return _getFloatingTab(value);
-        },
-      );
-
-  @override
-  HomeBloc provideBloc() => HomeBloc();
 }
 
 class _TabPages extends StatelessWidget {

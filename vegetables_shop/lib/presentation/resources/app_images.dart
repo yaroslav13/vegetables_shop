@@ -1,5 +1,4 @@
 class AppImages {
-
   //Logo
   static const String shopLogo = 'assets/shop_logo.png';
 
@@ -23,4 +22,18 @@ class AppImages {
   static const String news = 'assets/newspaper.png';
   static const String rightArrow = 'assets/right_arrow.png';
   static const String telephone = 'assets/telephone.png';
+
+  //Product details section
+  static const String arrowUp = 'assets/arrow_up.svg';
+  static const String arrowDown = 'assets/arrow_down.svg';
+
+  //Cart page images
+  static const String iconChecked = 'assets/checked.png';
+  static const String emptyOval = 'assets/oval.png';
+  static const String paymentCardPlaceholder = 'assets/card_placeholder.png';
+  static const String iconVisa = 'assets/visa.svg';
+  static const String iconMasterCard = 'assets/master_card.svg';
+  static const String paymentCardBackground = 'assets/card_background.png';
+  static const String iconPaymentCardDefault = 'assets/payment_card_default.svg';
+  static const String iconBilling = 'assets/billing_card.svg';
 }

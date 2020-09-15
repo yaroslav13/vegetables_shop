@@ -39,6 +39,8 @@ dependencies:
   rx_shared_preferences: ^1.1.1+1
   dotted_border: 1.0.6
   url_launcher: 5.5.2
+  carousel_slider: 1.4.1
+  dots_indicator: 1.1.0
 
   # Clean code / Code Style
   pedantic: ^1.0.0
@@ -81,6 +83,16 @@ flutter:
      - assets/newspaper.png
      - assets/right_arrow.png
      - assets/telephone.png
+     - assets/arrow_down.svg
+     - assets/arrow_up.svg
+     - assets/oval.png
+     - assets/checked.png
+     - assets/master_card.svg
+     - assets/visa.svg
+     - assets/card_background.png
+     - assets/credit_card_placeholder.png
+     - assets/payment_card_default.svg
+     - assets/billing_card.svg
 
     #Html
      - html/terms.html

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="16px" viewBox="0 0 24 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>Credit-Card-Empty</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 0 24 0 24 16 0 16"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Credit-Card-Empty">
+            <g id="Group-4">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Clip-2"></g>
+                <polygon id="Fill-1" fill-opacity="0" fill="#FFFFFF" mask="url(#mask-2)" points="-2 -6 26 -6 26 22 -2 22"></polygon>
+                <path d="M2,0 L22,0 C23.10457,0 24,0.89543 24,2 L24,14 C24,15.1045694 23.10457,16 22,16 L2,16 C0.8954304,16 0,15.1045694 0,14 L0,2 C0,0.89543 0.8954304,0 2,0 Z M18,2 C17.44772,2 17,2.44772 17,3 L17,5 C17,5.55228 17.44772,6 18,6 L20,6 C20.55228,6 21,5.55228 21,5 L21,3 C21,2.44772 20.55228,2 20,2 L18,2 Z" id="Fill-3" fill="#DFE2E2" mask="url(#mask-2)"></path>
+            </g>
+            <path d="M3,10 L5,10 C5.552285,10 6,10.447716 6,11 C6,11.552284 5.552285,12 5,12 L3,12 C2.447715,12 2,11.552284 2,11 C2,10.447716 2.447715,10 3,10 Z M8,10 L10,10 C10.55228,10 11,10.447716 11,11 C11,11.552284 10.55228,12 10,12 L8,12 C7.447715,12 7,11.552284 7,11 C7,10.447716 7.447715,10 8,10 Z M13,10 L15,10 C15.55228,10 16,10.447716 16,11 C16,11.552284 15.55228,12 15,12 L13,12 C12.44772,12 12,11.552284 12,11 C12,10.447716 12.44772,10 13,10 Z M18,10 L20,10 C20.55228,10 21,10.447716 21,11 C21,11.552284 20.55228,12 20,12 L18,12 C17.44772,12 17,11.552284 17,11 C17,10.447716 17.44772,10 18,10 Z" id="Fill-5" fill-opacity="0.4" fill="#63666A"></path>
+        </g>
+    </g>
+</svg>

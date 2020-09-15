@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vegetable_shop/common_widgets/terms/terms.dart';
+import 'package:vegetable_shop/common_widgets/user_placeholder/user_placeholder.dart';
 import 'package:vegetable_shop/presentation/bloc/app_drawer_bloc/app_drawer_bloc.dart';
 import 'package:vegetable_shop/presentation/bloc/base_drawer.dart';
 import 'package:vegetable_shop/presentation/pages/news_page/news_page.dart';
-import 'package:vegetable_shop/presentation/pages/terms_page/terms_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
@@ -26,7 +26,7 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _Placeholder(),
+                UserPlaceholder(),
                 const Divider(color: AppColors.turquoise),
                 _DrawerSections(
                   imagePath: AppImages.news,
@@ -38,7 +38,10 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
                     text: AppStrings.telephone,
                     onTap: _launchToCall),
                 const Spacer(),
-                const _Terms(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 25.0),
+                  child: const Terms(),
+                ),
               ],
             ),
           ),
@@ -59,29 +62,6 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
 
   _navigateToNewsPage() =>
       Navigator.of(context).push(SlideRightRoute(page: NewsPage()));
-}
-
-class _Placeholder extends StatelessWidget {
-  final String imagePath;
-
-  const _Placeholder({Key key, this.imagePath}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Container(
-          height: 80.0,
-          width: 80.0,
-          child: FittedBox(
-              child: imagePath != null
-                  ? NetworkImage(imagePath)
-                  : SvgPicture.asset(AppImages.placeholder)),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-        ));
-  }
 }
 
 class _DrawerSections extends StatefulWidget {
@@ -196,29 +176,4 @@ class _DrawerSectionsState extends State<_DrawerSections>
     }
     _forwardAnimation();
   }
-}
-
-class _Terms extends StatelessWidget {
-  const _Terms();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 25.0),
-        child: GestureDetector(
-            onTap: () => _navigateToTermsPage(context),
-            child: Text(
-              AppStrings.terms,
-              style: Theme.of(context).textTheme.bodyText1.copyWith(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w400,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.mantis.withOpacity(0.5),
-                  decorationThickness: 6.0),
-            )));
-  }
-
-  _navigateToTermsPage(BuildContext context) =>
-      Navigator.of(context).push(SlideRightRoute(page: TermsPage()));
 }

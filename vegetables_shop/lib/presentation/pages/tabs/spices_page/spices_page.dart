@@ -4,6 +4,7 @@ import 'package:vegetable_shop/common_widgets/main_app_bar/main_app_bar.dart';
 import 'package:vegetable_shop/common_widgets/grid_view_section/grid_view_section.dart';
 import 'package:vegetable_shop/presentation/bloc/base_screen.dart';
 import 'package:vegetable_shop/presentation/bloc/spices_bloc/spices_bloc.dart';
+import 'package:vegetable_shop/utilits/extentions.dart';
 
 class SpicesPage extends BaseScreen {
   @override
@@ -30,9 +31,11 @@ class _SpicesPageState extends BaseState<SpicesPage, SpicesBloc> {
       padding: const EdgeInsets.all(12.0),
       itemCount: 10,
       itemBuilder: (BuildContext context, int i) {
-        return GridViewSection(
+        return GridViewProductElement(
           productName: 'Product name',
+          price: 300,
+          country: 'Ukraine',
+          unitType: UnitTypes.gram,
         );
       });
-
 }

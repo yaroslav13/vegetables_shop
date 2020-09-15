@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 
 const _loaderDotSize = 6.0;
 const _loaderPadding = 2.0;
@@ -6,7 +7,7 @@ const _loaderPadding = 2.0;
 class LoadingIndicator extends StatefulWidget {
   final Color color;
 
-  const LoadingIndicator({Key key, this.color = Colors.white})
+  const LoadingIndicator({Key key, this.color = AppColors.mantis})
       : super(key: key);
 
   @override

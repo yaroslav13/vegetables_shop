@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
           _logo(),
           _title(),
           const SizedBox(height: 25.0),
-          LoadingIndicator(),
+          const LoadingIndicator(color: Colors.white),
         ],
       ),
     );

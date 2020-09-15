@@ -1,20 +1,21 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:vegetable_shop/presentation/pages/product_order_page/product_order_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/utilits/extentions.dart';
 
-class GridViewSection extends StatelessWidget {
+class GridViewProductElement extends StatelessWidget {
   final String productName;
-  final String calories;
   final String country;
-  final String price;
+  final int price;
+  final UnitTypes unitType;
 
-  const GridViewSection(
+  const GridViewProductElement(
       {Key key,
       @required this.productName,
-      this.calories,
-      this.country,
-      this.price})
+      @required this.price,
+      this.unitType = UnitTypes.kg,
+      this.country})
       : super(key: key);
 
   @override
@@ -27,7 +28,9 @@ class GridViewSection extends StatelessWidget {
         child: RaisedButton(
             color: Colors.white,
             elevation: 0.8,
-            onPressed: () {},
+            onPressed: () {
+              _navigateToProductOrderPage(context);
+            },
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
               child: Column(
@@ -43,20 +46,26 @@ class GridViewSection extends StatelessWidget {
                   const Divider(color: AppColors.turquoise),
                   _BriefDetailsRow(
                     type: BriefDetailsTypes.balance,
-                    text: '200 кл',
+                    text: unitType.getUnit,
                   ),
                   _BriefDetailsRow(
                     type: BriefDetailsTypes.country,
-                    text: 'Ukraine',
+                    text: country,
                   ),
                   _BriefDetailsRow(
                     type: BriefDetailsTypes.price,
-                    text: '200 грн',
+                    text: '$price грн',
                   ),
                 ],
               ),
             )));
   }
+
+  _navigateToProductOrderPage(BuildContext context) => Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => ProductOrderPage(
+              unitType: unitType, price: price, productName: productName)));
 }
 
 class _BriefDetailsRow extends StatelessWidget {
