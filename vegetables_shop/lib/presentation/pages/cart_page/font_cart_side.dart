@@ -99,6 +99,13 @@ class _FontSideState extends State<FontSide> {
         ),
       );
 
+  Future<void> _navigateToPaySection() async {
+    //TODO: check on _selectedProductItems.isNotEmpty && _agreeWithTermsSelected.value
+    if (_agreeWithTermsSelected.value) {
+      widget.flipController.forward();
+    }
+  }
+
   double _getTotalPrice() {
     const double defaultPrice = 0.0;
     double totalPrice = defaultPrice;
@@ -106,13 +113,6 @@ class _FontSideState extends State<FontSide> {
       totalPrice += item.data.price;
     }
     return totalPrice;
-  }
-
-  Future<void> _navigateToPaySection() async {
-    //TODO: check on _selectedProductItems.isNotEmpty && _agreeWithTermsSelected.value
-    if (_agreeWithTermsSelected.value) {
-      widget.flipController.forward();
-    }
   }
 }
 
