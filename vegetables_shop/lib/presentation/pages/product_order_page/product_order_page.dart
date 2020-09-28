@@ -3,7 +3,6 @@ import 'package:vegetable_shop/common_widgets/default_app_bar/default_app_bar.da
 import 'package:vegetable_shop/presentation/bloc/base_screen.dart';
 import 'package:vegetable_shop/presentation/bloc/product_order_bloc/product_order_bloc.dart';
 import 'package:vegetable_shop/presentation/pages/product_order_page/order_body.dart';
-import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 import 'package:vegetable_shop/utilits/extentions.dart';
 
 import 'images_corousel.dart';

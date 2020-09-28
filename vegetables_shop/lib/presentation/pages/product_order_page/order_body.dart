@@ -22,6 +22,7 @@ class OrderBody extends StatefulWidget {
 class _OrderBodyState extends State<OrderBody> {
   final TextEditingController _desiredWeightFieldController =
       TextEditingController();
+
   final ValueNotifier<bool> _desiredWeightFieldControllerIsNotEmpty =
       ValueNotifier(false);
   final ValueNotifier<String> _desiredWeightFieldControllerTextNotifier =
@@ -134,7 +135,7 @@ class _OrderBodyState extends State<OrderBody> {
   Padding _addToCartButton() => Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: AnimatedMainButton.fromText(AppStrings.addToCart,
-            weight: MediaQuery.of(context).size.width * 0.9, height: 45.0),
+            width: MediaQuery.of(context).size.width * 0.9, height: 45.0),
       );
 
   List<DefaultWeightItems> _prepareDefaultWeightItems() {

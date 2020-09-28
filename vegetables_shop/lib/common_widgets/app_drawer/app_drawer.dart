@@ -35,7 +35,7 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
                 ),
                 _DrawerSections(
                     imagePath: AppImages.telephone,
-                    text: AppStrings.telephone,
+                    text: AppStrings.contacts,
                     onTap: _launchToCall),
                 const Spacer(),
                 Padding(

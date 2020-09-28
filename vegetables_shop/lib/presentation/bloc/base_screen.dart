@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vegetable_shop/common_widgets/loader_indicator/loader_indicator.dart';
+import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'base_bloc.dart';
 import 'bloc_provider.dart';
-
 
 abstract class BaseScreen<Bloc extends BaseBloc> extends StatefulWidget {
   BaseScreen({Key key}) : super(key: key);
@@ -68,9 +69,10 @@ abstract class BaseState<T extends BaseScreen, Bloc extends BaseBloc>
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
+                    color: AppColors.surface,
                     child: Center(
                         child: showProgressIndicator
-                            ? CircularProgressIndicator()
+                            ? const LoadingIndicator(color: AppColors.mantis)
                             : Container())));
           } else {
             return Container();

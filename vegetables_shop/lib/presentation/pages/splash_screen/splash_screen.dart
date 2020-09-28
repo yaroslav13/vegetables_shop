@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/loader_indicator/loader_indicator.dart';
-import 'package:vegetable_shop/presentation/pages/home_screen/home_screen.dart';
+import 'package:vegetable_shop/presentation/pages/log_in_page/log_in_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
@@ -70,12 +70,9 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  Widget _logo() => ScaleTransition(
-        scale: _logoAnimation,
-        child: Opacity(
-          opacity: _logoAnimation.value,
-          child: Image.asset(AppImages.shopLogo),
-        ),
+  Widget _logo() => Opacity(
+        opacity: _logoAnimation.value,
+        child: Image.asset(AppImages.shopLogo),
       );
 
   Padding _title() => Padding(
@@ -89,5 +86,5 @@ class _SplashScreenState extends State<SplashScreen>
   _navigateToHomeScreen() => Navigator.push(
       context,
       MaterialPageRoute(
-          fullscreenDialog: true, builder: (context) => HomeScreen()));
+          fullscreenDialog: true, builder: (context) => LogInPage()));
 }

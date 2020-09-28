@@ -36,4 +36,12 @@ class AppImages {
   static const String paymentCardBackground = 'assets/card_background.png';
   static const String iconPaymentCardDefault = 'assets/payment_card_default.svg';
   static const String iconBilling = 'assets/billing_card.svg';
+
+  //Registration page images
+  static const String camera = 'assets/camera.png';
+  static String getFlagIcon(String value){
+    var code = value.toLowerCase();
+    return 'icons/flags/png/$code.png';
+  }
+  static const String completedRegistration = 'assets/done.svg';
 }

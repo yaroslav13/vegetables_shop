@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/animated_main_button/animated_main_button.dart';
 import 'package:vegetable_shop/common_widgets/terms/terms.dart';
 
+import '../../resources/app_strings.dart';
 import 'cart_products_list_element.dart';
 
 class FontSide extends StatefulWidget {
@@ -16,10 +15,12 @@ class FontSide extends StatefulWidget {
 }
 
 class _FontSideState extends State<FontSide> {
-  final ValueNotifier<bool> _agreeWithTermsSelected =
+  final ValueNotifier<bool> _buttonCanBeActiveNotifier =
       ValueNotifier<bool>(false);
 
   List<_ProductItem> _selectedProductItems = List();
+
+  bool _isCheckBoxSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +43,14 @@ class _FontSideState extends State<FontSide> {
             )));
   }
 
-  @override
-  void dispose() {
-    _agreeWithTermsSelected.dispose();
-    super.dispose();
-  }
-
   Padding _cartTitle() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Ваши товары:', style: Theme.of(context).textTheme.subtitle2),
-            Text('Общая сума: ${_getTotalPrice()}',
+            Text(AppStrings.yourProducts,
+                style: Theme.of(context).textTheme.subtitle2),
+            Text(AppStrings.totalPrice(_getTotalPrice()),
                 style: Theme.of(context).textTheme.subtitle2.copyWith(
                       fontSize: 16.0,
                     )),
@@ -62,8 +58,8 @@ class _FontSideState extends State<FontSide> {
         ),
       );
 
-  SizedBox _productsList() => SizedBox(
-        height: MediaQuery.of(context).size.height * 0.6,
+  Expanded _productsList() => Expanded(
+        flex: 3,
         child: ListView.builder(
             shrinkWrap: true,
             itemCount: 20,
@@ -75,6 +71,7 @@ class _FontSideState extends State<FontSide> {
                 weightOfProduct: 200,
                 // selected: _selectedProductItems.contains(element),
                 onTap: () {
+                  _checkButtonState();
                   setState(() {
                     //TODO: add item to _selectedProductItems list after tap
                     //_selectedProductItems.add();
@@ -84,26 +81,44 @@ class _FontSideState extends State<FontSide> {
             }),
       );
 
-  Expanded _paySection() => Expanded(
+  Padding _paySection() => Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _AgreeWithTermsCheckBox(
-              selectedNotifier: _agreeWithTermsSelected,
+              isSelected: _isCheckBoxSelected,
+              onSelectedChanged: (bool selected) {
+                _onCheckBoxTap(selected);
+                _checkButtonState();
+              },
             ),
-            AnimatedMainButton.fromText('Перейти к оплате',
-                height: 54.0,
-                weight: MediaQuery.of(context).size.width * 0.8,
-                onTap: _navigateToPaySection),
+            ValueListenableBuilder(
+              valueListenable: _buttonCanBeActiveNotifier,
+              builder: (BuildContext context, canBeActive, _) {
+                return AnimatedMainButton.fromText(AppStrings.transitToPayment,
+                    height: 54.0,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    onTap: canBeActive ? _navigateToPaySection : null);
+              },
+            ),
           ],
         ),
       );
 
   Future<void> _navigateToPaySection() async {
-    //TODO: check on _selectedProductItems.isNotEmpty && _agreeWithTermsSelected.value
-    if (_agreeWithTermsSelected.value) {
+    if (_buttonIsActive()) {
       widget.flipController.forward();
     }
+  }
+
+  void _checkButtonState() {
+    _buttonCanBeActiveNotifier.value = _buttonIsActive();
+  }
+
+  bool _buttonIsActive() {
+    //TODO: check on _selectedProductItems.isNotEmpty && _isCheckBoxSelected
+    return _isCheckBoxSelected;
   }
 
   double _getTotalPrice() {
@@ -114,35 +129,41 @@ class _FontSideState extends State<FontSide> {
     }
     return totalPrice;
   }
+
+  void _onCheckBoxTap(bool selected) {
+    setState(() {
+      _isCheckBoxSelected = selected;
+    });
+  }
 }
 
 class _AgreeWithTermsCheckBox extends StatelessWidget {
-  final ValueNotifier<bool> selectedNotifier;
+  final ValueChanged<bool> onSelectedChanged;
+  final bool isSelected;
 
-  const _AgreeWithTermsCheckBox({Key key, @required this.selectedNotifier})
+  const _AgreeWithTermsCheckBox(
+      {Key key, @required this.onSelectedChanged, this.isSelected = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.only(left: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ValueListenableBuilder<bool>(
-            valueListenable: selectedNotifier,
-            builder: (context, selected, _) {
-              return Checkbox(
-                value: selected,
-                onChanged: (bool value) {
-                  selectedNotifier.value = value;
-                },
-              );
+          Checkbox(
+            value: isSelected,
+            onChanged: (bool value) {
+              onSelectedChanged(value);
             },
           ),
-          Text('Я соглашаюсь с ', style: Theme.of(context).textTheme.bodyText1),
-          const SizedBox(width: 2.0),
-          const Terms(),
+          Text('Я соглашаюсь с ',
+              style: Theme.of(context).textTheme.bodyText1,
+              overflow: TextOverflow.clip),
+          Expanded(
+            child: const Terms(),
+          ),
         ],
       ),
     );

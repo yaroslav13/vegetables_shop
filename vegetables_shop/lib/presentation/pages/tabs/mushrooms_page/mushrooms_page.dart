@@ -5,7 +5,8 @@ import 'package:vegetable_shop/common_widgets/main_app_bar/main_app_bar.dart';
 import 'package:vegetable_shop/common_widgets/grid_view_section/grid_view_section.dart';
 import 'package:vegetable_shop/presentation/bloc/base_screen.dart';
 import 'package:vegetable_shop/presentation/bloc/mushrooms_bloc/mushrooms_bloc.dart';
-import 'package:vegetable_shop/utilits/extentions.dart';
+
+import '../vegetables_page/vegetables_page.dart';
 
 class MushroomsPage extends BaseScreen {
   @override
@@ -13,8 +14,12 @@ class MushroomsPage extends BaseScreen {
 }
 
 class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
-  PreferredSizeWidget appBar() => MainAppBar();
+  PreferredSizeWidget appBar() => MainAppBar(
+    searchController: _searchController,
+  );
 
   @override
   Widget drawer() => AppDrawer();
@@ -24,7 +29,7 @@ class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 12.0,
-          childAspectRatio: 0.70,
+          childAspectRatio: childAspectRatio,
           mainAxisSpacing: 12.0),
       padding: const EdgeInsets.all(12.0),
       itemCount: 10,
@@ -35,6 +40,12 @@ class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
           country: 'Ukraine',
         );
       });
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   MushroomsBloc provideBloc() => MushroomsBloc();

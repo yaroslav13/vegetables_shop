@@ -7,6 +7,10 @@ import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 
 class MainAppBar extends StatefulWidget with PreferredSizeWidget {
+  final TextEditingController searchController;
+
+  const MainAppBar({Key key,@required this.searchController}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _MainAppBarState();
 
@@ -16,7 +20,6 @@ class MainAppBar extends StatefulWidget with PreferredSizeWidget {
 
 class _MainAppBarState extends State<MainAppBar> {
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController _searchController = TextEditingController();
   final ValueNotifier<bool> _searchControllerIsNotEmpty =
       ValueNotifier<bool>(false);
 
@@ -25,7 +28,7 @@ class _MainAppBarState extends State<MainAppBar> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_controllerTextListener);
+    widget.searchController.addListener(_controllerTextListener);
   }
 
   @override
@@ -69,7 +72,6 @@ class _MainAppBarState extends State<MainAppBar> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     _focusNode.dispose();
     _searchControllerIsNotEmpty.dispose();
     super.dispose();
@@ -80,12 +82,13 @@ class _MainAppBarState extends State<MainAppBar> {
       return ValueListenableBuilder<bool>(
         valueListenable: _searchControllerIsNotEmpty,
         builder: (BuildContext context, controllerIsNotEmpty, _) {
-          return InputField.fromClearButtonSuffixIcon(
-            height: 42.0,
-            width: 300.0,
-            controller: _searchController,
-            focusNode: _focusNode,
-            displayClearButton: controllerIsNotEmpty,
+          return Expanded(
+            child: InputField.fromClearButtonSuffixIcon(
+              height: 42.0,
+              controller: widget.searchController,
+              focusNode: _focusNode,
+              displayClearButton: controllerIsNotEmpty,
+            ),
           );
         },
       );
@@ -102,6 +105,6 @@ class _MainAppBarState extends State<MainAppBar> {
       ));
 
   void _controllerTextListener() {
-    _searchControllerIsNotEmpty.value = _searchController.text.isNotEmpty;
+    _searchControllerIsNotEmpty.value = widget.searchController.text.isNotEmpty;
   }
 }

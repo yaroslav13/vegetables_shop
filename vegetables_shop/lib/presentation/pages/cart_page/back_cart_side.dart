@@ -47,7 +47,7 @@ class _BackSideState extends State<BackSide> {
                 const Spacer(),
                 AnimatedMainButton.fromText(AppStrings.pay,
                     height: 54.0,
-                    weight: MediaQuery.of(context).size.width * 0.8),
+                    width: MediaQuery.of(context).size.width * 0.8),
               ],
             ),
           ),

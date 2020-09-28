@@ -5,7 +5,9 @@ import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 import 'package:vegetable_shop/utilits/routes/routes.dart';
 
 class Terms extends StatelessWidget {
-  const Terms();
+  final Color textColor;
+
+  const Terms({Key key, this.textColor = Colors.black}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +16,14 @@ class Terms extends StatelessWidget {
             child: Text(
               AppStrings.terms,
               style: Theme.of(context).textTheme.bodyText1.copyWith(
-                  color: Colors.black,
+                  color: textColor,
                   fontSize: 16.0,
                   fontWeight: FontWeight.w400,
                   decoration: TextDecoration.underline,
                   decorationColor: AppColors.mantis.withOpacity(0.5),
                   decorationThickness: 6.0),
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.start,
             ));
   }
 
