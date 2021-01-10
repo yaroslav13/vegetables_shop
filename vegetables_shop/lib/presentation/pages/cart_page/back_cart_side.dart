@@ -2,11 +2,18 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:vegetable_shop/common_widgets/alerts/main_alert.dart';
 import 'package:vegetable_shop/common_widgets/animated_main_button/animated_main_button.dart';
 import 'package:vegetable_shop/common_widgets/user_placeholder/user_placeholder.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
+import 'package:vegetable_shop/data/models/totalPrice.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/cart_bloc/cart_bloc.dart';
+import 'package:vegetable_shop/presentation/pages/update_payment_card_page/update_payment_card_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
+import 'package:vegetable_shop/utilits/date_converter.dart';
 
 import 'card_view.dart';
 
@@ -38,28 +45,58 @@ class _BackSideState extends State<BackSide> {
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: Column(
               children: [
-                CardView(),
-                _ProfileInformation(),
+                const CardView(),
+                const _ProfileInformation(),
                 _ButtonManager.fromIconData(Icons.arrow_back_ios,
                     text: AppStrings.backToCartList, onTap: _backToCartList),
-                _ButtonManager.fromSvgImageData(AppImages.iconBilling,
-                    text: AppStrings.changePaymentCart),
+                FutureBuilder<PaymentCard>(
+                    future: BlocProvider.of<CartBloc>(context).getPaymentCard(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        return _ButtonManager.fromSvgImageData(
+                          AppImages.iconBilling,
+                          text: AppStrings.changePaymentCart,
+                          onTap: () {
+                            _navigateToUpdatePaymentCardPage(snapshot.data);
+                          },
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
                 const Spacer(),
                 AnimatedMainButton.fromText(AppStrings.pay,
                     height: 54.0,
-                    width: MediaQuery.of(context).size.width * 0.8),
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    onTap: _confirmBuy),
               ],
             ),
           ),
         ));
   }
 
+  Future<void> _confirmBuy() async {
+    String date = convertDate(DateTime.now());
+    await BlocProvider.of<CartBloc>(context).confirmBuy(date: date).then((_) {
+      showMainAlert(context,
+              imagePath: AppImages.iconChecked,
+              body: AppStrings.orderSuccessCompleted,
+              textColor: AppColors.mantis)
+          .whenComplete(() => Navigator.pop(context));
+    });
+  }
+
   void _backToCartList() {
     widget.flipController.reverse();
   }
+
+  _navigateToUpdatePaymentCardPage(PaymentCard card) => Navigator.push(
+      context, MaterialPageRoute(builder: (_) => UpdatePaymentCardPage(card)));
 }
 
 class _ProfileInformation extends StatelessWidget {
+  const _ProfileInformation();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -71,19 +108,51 @@ class _ProfileInformation extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10.0, right: 20.0),
-                child: UserPlaceholder(
-                  height: 30.0,
-                  weight: 30.0,
+                child: FutureBuilder<Customer>(
+                  future: BlocProvider.of<CartBloc>(context).getUser(),
+                  builder: (BuildContext context, snapshot) {
+                    if (snapshot.hasData) {
+                      return UserPlaceholder(
+                        height: 30.0,
+                        weight: 30.0,
+                        imagePath: snapshot.data.photoUrl,
+                      );
+                    } else {
+                      return SizedBox.shrink();
+                    }
+                  },
                 ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('User name',
-                      style: Theme.of(context).textTheme.bodyText1),
+                  FutureBuilder<Customer>(
+                    future: BlocProvider.of<CartBloc>(context).getUser(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        var customerName = snapshot.data.customerSurname +
+                            snapshot.data.customerName;
+                        return Text(customerName,
+                            style: Theme.of(context).textTheme.bodyText1);
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
                   const SizedBox(height: 5.0),
-                  Text('Total price: 300 грн',
-                      style: Theme.of(context).textTheme.bodyText2),
+                  FutureBuilder<TotalPrice>(
+                    future:
+                        BlocProvider.of<CartBloc>(context).getTotalCartPrice(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                            AppStrings.totalPrice(snapshot.data.totalPrice),
+                            style: Theme.of(context).textTheme.bodyText2);
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
                 ],
               ),
             ],

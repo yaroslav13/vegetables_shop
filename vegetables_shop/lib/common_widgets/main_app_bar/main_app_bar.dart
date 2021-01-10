@@ -9,7 +9,8 @@ import 'package:vegetable_shop/presentation/resources/app_images.dart';
 class MainAppBar extends StatefulWidget with PreferredSizeWidget {
   final TextEditingController searchController;
 
-  const MainAppBar({Key key,@required this.searchController}) : super(key: key);
+  const MainAppBar({Key key, @required this.searchController})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MainAppBarState();

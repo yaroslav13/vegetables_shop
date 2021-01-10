@@ -9,6 +9,10 @@ import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 const Duration _kAnimationDuration = Duration(milliseconds: 370);
 
 class ProductDescriptionSection extends StatefulWidget {
+  final String productInfo;
+
+  const ProductDescriptionSection({Key key, this.productInfo}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _ProductDescriptionSectionState();
 }
@@ -76,7 +80,7 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
   List<Widget> _prepareExpansionChildren() {
     return [
       Text(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tristique, dui at condimentum dignissim, ligula sem rhoncus nisl, at fringilla purus magna vitae tortor. Proin felis justo, gravida a mattis nec, interdum et mi. Vestibulum mollis erat porta, sodales neque in, ultrices ex. Fusce pellentesque urna in dignissim posuere. Nullam ut nisi malesuada, pretium quam sit amet, sodales nibh. Sed quam nisi, luctus quis laoreet ac, molestie eget est. Cras eros ex, porttitor in bibendum et, tempus eu sem. In diam leo, eleifend non mollis sit amet, aliquet sit amet justo. Nunc pellentesque risus id ligula placerat euismod. Sed id risus in purus elementum ullamcorper ut bibendum magna. Donec eu posuere arcu.',
+        widget.productInfo,
         style: Theme.of(context).textTheme.bodyText1,
       ),
       const SizedBox(height: 25.0),

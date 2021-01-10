@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/app_drawer/app_drawer.dart';
-import 'package:vegetable_shop/presentation//bloc/base_screen.dart';
-import 'package:vegetable_shop/presentation//bloc/home_bloc/home_bloc.dart';
+import 'package:vegetable_shop/presentation/bloc/base_screen.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/home_bloc/home_bloc.dart';
 import 'package:vegetable_shop/presentation/pages/tabs/fruits_page/fruits_page.dart';
 import 'package:vegetable_shop/presentation/pages/tabs/mushrooms_page/mushrooms_page.dart';
 import 'package:vegetable_shop/presentation/pages/tabs/nuts_page/nuts_page.dart';
@@ -144,14 +145,17 @@ class _TabPages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<int>(
-      valueListenable: notifier,
-      builder: (BuildContext context, value, _) {
-        return IndexedStack(
-          index: value,
-          children: tabs,
-        );
-      },
+    return BlocProvider(
+      bloc: HomeBloc(),
+      child: ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (BuildContext context, value, _) {
+          return IndexedStack(
+            index: value,
+            children: tabs,
+          );
+        },
+      ),
     );
   }
 }

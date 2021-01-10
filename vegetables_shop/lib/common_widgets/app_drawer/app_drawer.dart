@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vegetable_shop/common_widgets/terms/terms.dart';
 import 'package:vegetable_shop/common_widgets/user_placeholder/user_placeholder.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
 import 'package:vegetable_shop/presentation/bloc/app_drawer_bloc/app_drawer_bloc.dart';
 import 'package:vegetable_shop/presentation/bloc/base_drawer.dart';
-import 'package:vegetable_shop/presentation/pages/news_page/news_page.dart';
+import 'package:vegetable_shop/presentation/pages/log_in_page/log_in_page.dart';
+import 'package:vegetable_shop/presentation/pages/product_cheque_page/product_cheque_page.dart';
+import 'package:vegetable_shop/presentation/pages/top5_product_for_you_page/top5_product_for_you.dart';
+import 'package:vegetable_shop/presentation/pages/update_address_page/update_address_page.dart';
+import 'package:vegetable_shop/presentation/pages/update_payment_card_page/update_payment_card_page.dart';
+import 'package:vegetable_shop/presentation/pages/update_profile_page/update_profile_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
@@ -26,21 +32,89 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                UserPlaceholder(),
+                FutureBuilder<Customer>(
+                    future: bloc.getCustomer(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        Customer customer = snapshot.data;
+                        return UserPlaceholder(
+                          imagePath: customer.photoUrl,
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
                 const Divider(color: AppColors.turquoise),
+                FutureBuilder<Customer>(
+                    future: bloc.getCustomer(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        Customer customer = snapshot.data;
+                        return _DrawerSections(
+                            imagePath: AppImages.profileIcon,
+                            text: AppStrings.updateProfileInfo,
+                            onTap: () {
+                              _navigateToProfilePage(customer);
+                            });
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
+                FutureBuilder<Address>(
+                    future: bloc.getAddress(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        Address address = snapshot.data;
+                        return _DrawerSections(
+                            imagePath: AppImages.locationIcon,
+                            text: AppStrings.address,
+                            onTap: () {
+                              _navigateToUpdateAddressPage(address);
+                            });
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
+                FutureBuilder<PaymentCard>(
+                    future: bloc.getPaymentCard(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        PaymentCard card = snapshot.data;
+                        return _DrawerSections(
+                            imagePath: AppImages.creditCardIcon,
+                            text: AppStrings.cardName,
+                            onTap: () {
+                              _navigateToUpdatePaymentCard(card);
+                            });
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
+            _DrawerSections(
+                imagePath: AppImages.cheque,
+                text: AppStrings.chequeTitle,
+                onTap: _navigateToCheques),
                 _DrawerSections(
-                  imagePath: AppImages.news,
-                  text: AppStrings.news,
-                  onTap: _navigateToNewsPage,
-                ),
+                    imagePath: AppImages.topFiveIcon,
+                    text: AppStrings.topFive,
+                    onTap: _navigateToTopFiveForYouPage),
                 _DrawerSections(
                     imagePath: AppImages.telephone,
                     text: AppStrings.contacts,
                     onTap: _launchToCall),
                 const Spacer(),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 25.0),
+                  padding: const EdgeInsets.only(bottom: 5.0),
                   child: const Terms(),
+                ),
+                const Divider(color: AppColors.turquoise),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 25.0),
+                  child: _DrawerSections(
+                    imagePath: AppImages.logout,
+                    text: AppStrings.exit,
+                    onTap: _logout,
+                  ),
                 ),
               ],
             ),
@@ -60,8 +134,50 @@ class _AppDrawerState extends BaseState<AppDrawer, AppDrawerBloc> {
     }
   }
 
-  _navigateToNewsPage() =>
-      Navigator.of(context).push(SlideRightRoute(page: NewsPage()));
+  _navigateToProfilePage(Customer customer) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) => UpdateProfilePage(customer)));
+  }
+
+  _navigateToUpdateAddressPage(Address address) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) => UpdateAddressPage(address)));
+  }
+
+  _navigateToCheques() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) => ProductChequePage()));
+  }
+
+  _navigateToUpdatePaymentCard(PaymentCard card) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) => UpdatePaymentCardPage(card)));
+  }
+
+  _navigateToTopFiveForYouPage() => Navigator.push(
+      context,
+      MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => TopFiveProductForYouPage()));
+
+  Future<void> _logout() async {
+    await bloc.logout().whenComplete(() => Navigator.push(
+        context,
+        MaterialPageRoute(
+            fullscreenDialog: true, builder: (context) => LogInPage())));
+  }
 }
 
 class _DrawerSections extends StatefulWidget {
@@ -108,7 +224,7 @@ class _DrawerSectionsState extends State<_DrawerSections>
     return Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-            onTap: () => _handleTap(),
+            onTap: _handleTap,
             child: Container(
               child: Column(
                 children: [

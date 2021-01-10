@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/animated_main_button/animated_main_button.dart';
 import 'package:vegetable_shop/common_widgets/terms/terms.dart';
+import 'package:vegetable_shop/data/models/cart.dart';
+import 'package:vegetable_shop/data/models/totalPrice.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/cart_bloc/cart_bloc.dart';
 
 import '../../resources/app_strings.dart';
 import 'cart_products_list_element.dart';
@@ -18,9 +22,15 @@ class _FontSideState extends State<FontSide> {
   final ValueNotifier<bool> _buttonCanBeActiveNotifier =
       ValueNotifier<bool>(false);
 
-  List<_ProductItem> _selectedProductItems = List();
-
   bool _isCheckBoxSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<CartBloc>(context).getTotalCartPrice();
+    BlocProvider.of<CartBloc>(context).getCarts();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,35 +60,43 @@ class _FontSideState extends State<FontSide> {
           children: [
             Text(AppStrings.yourProducts,
                 style: Theme.of(context).textTheme.subtitle2),
-            Text(AppStrings.totalPrice(_getTotalPrice()),
-                style: Theme.of(context).textTheme.subtitle2.copyWith(
-                      fontSize: 16.0,
-                    )),
+            FutureBuilder<TotalPrice>(
+              future: BlocProvider.of<CartBloc>(context).getTotalCartPrice(),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(AppStrings.totalPrice(snapshot.data.totalPrice),
+                      style: Theme.of(context).textTheme.subtitle2.copyWith(
+                            fontSize: 16.0,
+                          ));
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
           ],
         ),
       );
 
   Expanded _productsList() => Expanded(
         flex: 3,
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: 20,
-            physics: const ScrollPhysics(),
-            itemBuilder: (BuildContext context, int i) {
-              return CartProductsListElement(
-                productName: 'Name',
-                price: 200,
-                weightOfProduct: 200,
-                // selected: _selectedProductItems.contains(element),
-                onTap: () {
-                  _checkButtonState();
-                  setState(() {
-                    //TODO: add item to _selectedProductItems list after tap
-                    //_selectedProductItems.add();
+        child: StreamBuilder<List<Cart>>(
+          stream: BlocProvider.of<CartBloc>(context).carts,
+          builder: (BuildContext context, snapshot){
+            if(snapshot.hasData) {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (BuildContext context, int i) {
+                    return CartProductsListElement(
+                      cart: snapshot.data[i],
+                    );
                   });
-                },
-              );
-            }),
+            }else {
+              return SizedBox.shrink();
+            }
+          },
+        ),
       );
 
   Padding _paySection() => Padding(
@@ -116,19 +134,7 @@ class _FontSideState extends State<FontSide> {
     _buttonCanBeActiveNotifier.value = _buttonIsActive();
   }
 
-  bool _buttonIsActive() {
-    //TODO: check on _selectedProductItems.isNotEmpty && _isCheckBoxSelected
-    return _isCheckBoxSelected;
-  }
-
-  double _getTotalPrice() {
-    const double defaultPrice = 0.0;
-    double totalPrice = defaultPrice;
-    for (_ProductItem item in _selectedProductItems) {
-      totalPrice += item.data.price;
-    }
-    return totalPrice;
-  }
+  bool _buttonIsActive() => _isCheckBoxSelected;
 
   void _onCheckBoxTap(bool selected) {
     setState(() {
@@ -158,7 +164,7 @@ class _AgreeWithTermsCheckBox extends StatelessWidget {
               onSelectedChanged(value);
             },
           ),
-          Text('Я соглашаюсь с ',
+          Text(AppStrings.iAgree,
               style: Theme.of(context).textTheme.bodyText1,
               overflow: TextOverflow.clip),
           Expanded(
@@ -168,8 +174,4 @@ class _AgreeWithTermsCheckBox extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ProductItem<T> {
-  T data;
 }

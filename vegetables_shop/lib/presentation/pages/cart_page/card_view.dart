@@ -1,12 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/cart_bloc/cart_bloc.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
+import 'package:vegetable_shop/utilits/date_converter.dart';
 
 enum PaymentCardTypes { mastercard, visa }
 
 class CardView extends StatelessWidget {
+  const CardView();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -45,35 +51,41 @@ class _CardDigits extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsetsDirectional.only(bottom: 20, start: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _CardNumber(cardNumber: '4234' //paymentCard.last4,
-              ),
-          Text(
-            '22/07', //_getExpiryDate(paymentCard.expiryMonth, paymentCard.expiryYear),
-            style: Theme.of(context).textTheme.bodyText1.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
+      child: FutureBuilder<PaymentCard>(
+        future: BlocProvider.of<CartBloc>(context).getPaymentCard(),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _CardNumber(
+                  cardNumber: snapshot.data.paymentCardNumber.substring(15, 19),
                 ),
-          ),
-          Text(
-            'Yaroslav Halivets', //paymentCard.name,
-            style: Theme.of(context).textTheme.bodyText1.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                Text(
+                  convertFromIso8601StringToExpireDate(snapshot.data.expireDate),
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
                 ),
-          ),
-        ],
+                Text(
+                  snapshot.data.paymentCardHolder, //paymentCard.name,
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                ),
+              ],
+            );
+          } else {
+            return SizedBox.shrink();
+          }
+        },
       ),
     );
-  }
-
-  String _getExpiryDate(int expiryMonth, int expiryYear) {
-    return expiryMonth.toString() + '/' + expiryYear.toString().substring(2, 4);
   }
 }
 
@@ -92,7 +104,7 @@ class _CardNumberPlaceholder extends StatelessWidget {
             shape: BoxShape.circle,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
       ],

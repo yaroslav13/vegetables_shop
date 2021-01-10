@@ -31,7 +31,7 @@ class CarNumberFormatter extends TextInputFormatter {
 }
 
 class ExpireDateTextFormatter extends TextInputFormatter {
-  static const int _maxChars = 4;
+  static const int _maxChars = 6;
 
   @override
   TextEditingValue formatEditUpdate(

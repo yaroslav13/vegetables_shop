@@ -14,4 +14,5 @@ class AppColors {
   static const Color mantis = Color(0xff7DCE82);
   static const Color turquoise = Color(0xff3CDBD3);
   static const Color turquoiseBlue = Color(0xff00FFF5);
+  static const Color iron = Color(0xffDFE2E2);
 }

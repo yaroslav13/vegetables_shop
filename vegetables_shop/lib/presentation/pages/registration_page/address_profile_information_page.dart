@@ -4,11 +4,14 @@ import 'package:vegetable_shop/common_widgets/behavior_button/behavior_button.da
 import 'package:vegetable_shop/common_widgets/cities_picker/cities_picker.dart';
 import 'package:vegetable_shop/common_widgets/input_field/input_field.dart';
 import 'package:vegetable_shop/data/models/city.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
 import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
 import 'package:vegetable_shop/presentation/bloc/registration_bloc/registration_bloc.dart';
 import 'package:vegetable_shop/presentation/pages/registration_page/registration_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 import 'package:vegetable_shop/utilits/extentions.dart';
+
+import 'main_profile_information_page.dart';
 
 const int thirdPage = 2;
 
@@ -57,6 +60,7 @@ class _AddressProfileInformationPageState
               InputField(
                 height: 54.0,
                 controller: _countryNameController,
+                width: MediaQuery.of(context).size.width,
                 hintText: AppStrings.country,
                 onSubmitted: (String submittedValue) {
                   _updateCitiesList(submittedValue);
@@ -75,6 +79,7 @@ class _AddressProfileInformationPageState
                     return InputField(
                       height: 54.0,
                       readOnly: true,
+                      width: MediaQuery.of(context).size.width,
                       controller: _cityFieldController,
                       hintText: AppStrings.city,
                       suffixIcon: GestureDetector(
@@ -92,6 +97,7 @@ class _AddressProfileInformationPageState
               ),
               InputField(
                 height: 54.0,
+                width: MediaQuery.of(context).size.width,
                 controller: _addressFieldController,
                 hintText: AppStrings.address,
                 onChanged: (_) {
@@ -103,6 +109,7 @@ class _AddressProfileInformationPageState
               ),
               InputField(
                 height: 54.0,
+                width: MediaQuery.of(context).size.width,
                 controller: _postCodeFieldController,
                 hintText: AppStrings.postCode,
                 onChanged: (_) {
@@ -134,8 +141,20 @@ class _AddressProfileInformationPageState
 
   Future<void> _goToNextRegistrationPage() async {
     if (_fieldsIsNotEmpty()) {
-      await widget.pageController.animateToPage(thirdPage,
-          duration: transitionDuration, curve: transitionCurve);
+      var address = Address.fromPost(
+          _addressFieldController.text,
+          int.parse(_postCodeFieldController.text),
+          _countryNameController.text,
+          _cityFieldController.text);
+
+      BlocProvider.of<RegistrationBloc>(context).postAddress(address)
+          .then((addressId) {
+            if(addressId != null) {
+              Auth.addressId = addressId;
+              widget.pageController.animateToPage(thirdPage,
+                  duration: transitionDuration, curve: transitionCurve);
+            }
+      });
     }
   }
 

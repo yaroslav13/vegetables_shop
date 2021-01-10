@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_shop/common_widgets/error_parser/error_parser.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
 import 'package:vegetable_shop/presentation/bloc/log_in_bloc/log_in_bloc.dart';
 import 'package:vegetable_shop/presentation/pages/home_screen/home_screen.dart';
 import 'package:vegetable_shop/presentation/pages/registration_page/registration_page.dart';
@@ -56,6 +58,7 @@ class _AuthFieldsState extends State<_AuthFields> {
   final TextEditingController _emailFieldController = TextEditingController();
   final TextEditingController _passwordFieldController =
       TextEditingController();
+  final ValueNotifier<String> _errorNotifier = ValueNotifier<String>("");
 
   bool _obscureText = true;
 
@@ -63,6 +66,9 @@ class _AuthFieldsState extends State<_AuthFields> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        ErrorParser(
+          errorParser: _errorNotifier,
+        ),
         InputField(
           height: 54.0,
           width: MediaQuery.of(context).size.width * 0.9,
@@ -99,15 +105,30 @@ class _AuthFieldsState extends State<_AuthFields> {
         child: AnimatedMainButton.fromText(AppStrings.singIn,
             width: MediaQuery.of(context).size.width * 0.9,
             height: 54.0,
-            onTap: _navigateToHomeScreen),
+            onTap: _navigateToHomeScreen,
+            onDone: _onSuccess,
+            onError: _onError),
       );
 
-  Future<void>_navigateToHomeScreen() async {
-    await Navigator.pushReplacement(
+  void _onSuccess() {
+    _errorNotifier.value = "";
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => HomeScreen(),
         ));
+  }
+
+  void _onError() {
+    _errorNotifier.value = AppStrings.notFoundUser;
+  }
+
+  Future<void> _navigateToHomeScreen() async {
+    if (_emailFieldController.text.isNotEmpty &&
+        _passwordFieldController.text.isNotEmpty) {
+      BlocProvider.of<LogInBloc>(context)
+          .getUser(_emailFieldController.text, _passwordFieldController.text);
+    }
   }
 }
 

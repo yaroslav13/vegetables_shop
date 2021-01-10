@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vegetable_shop/presentation//bloc/base_bloc.dart';
-import 'package:vegetable_shop/presentation//bloc/bloc_provider.dart';
+import 'package:vegetable_shop/data/repository/cache_manager/cache_manager.dart';
+import 'package:vegetable_shop/data/repository/cache_manager/data_cache_manager.dart';
+import 'package:vegetable_shop/presentation/bloc/base_bloc.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
 import 'package:vegetable_shop/presentation/pages/splash_screen/splash_screen.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
+
+import 'presentation/bloc/base_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -117,4 +121,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ApplicationBloc extends BaseBloc {}
+class ApplicationBloc extends BaseBloc {
+  final CacheManager _cacheManager = DataCacheManager();
+
+  Future<bool> isLogined() async {
+    return await _cacheManager.getUser() != null;
+  }
+}

@@ -1,19 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vegetable_shop/common_widgets/alerts/main_alert.dart';
 import 'package:vegetable_shop/common_widgets/animated_main_button/animated_main_button.dart';
 import 'package:vegetable_shop/common_widgets/input_field/input_field.dart';
+import 'package:vegetable_shop/data/models/product/product.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/product_order_bloc/product_order_bloc.dart';
 import 'package:vegetable_shop/presentation/pages/product_order_page/default_weight_items.dart';
 import 'package:vegetable_shop/presentation/pages/product_order_page/product_description_section.dart';
+import 'package:vegetable_shop/presentation/resources/app_colors.dart';
+import 'package:vegetable_shop/presentation/resources/app_images.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 import 'package:vegetable_shop/utilits/extentions.dart';
 
 class OrderBody extends StatefulWidget {
-  final int price;
+  final Product product;
   final UnitTypes unitType;
 
-  const OrderBody({Key key, @required this.price, @required this.unitType})
-      : super(key: key);
+  const OrderBody({
+    Key key,
+    @required this.product,
+    @required this.unitType,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _OrderBodyState();
@@ -42,7 +51,9 @@ class _OrderBodyState extends State<OrderBody> {
         _desiredWeightFieldDescription(),
         _desiredWeightField(),
         _defaultWeightValues(),
-        ProductDescriptionSection(),
+        ProductDescriptionSection(
+          productInfo: widget.product.productInfo,
+        ),
         _finalPrice(),
         _addToCartButton(),
       ],
@@ -135,7 +146,11 @@ class _OrderBodyState extends State<OrderBody> {
   Padding _addToCartButton() => Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: AnimatedMainButton.fromText(AppStrings.addToCart,
-            width: MediaQuery.of(context).size.width * 0.9, height: 45.0),
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 45.0,
+            onTap: _onTap,
+            onDone: _onSuccess,
+            onError: _onError),
       );
 
   List<DefaultWeightItems> _prepareDefaultWeightItems() {
@@ -170,10 +185,11 @@ class _OrderBodyState extends State<OrderBody> {
     int defaultWeight = widget.unitType.getDefaultValues;
 
     String weightEnteredInField = _separateNumbers(controllerText);
-    int parseEnteredWeightToInt = int.tryParse(weightEnteredInField);
+    double parseEnteredWeightToInt = double.tryParse(weightEnteredInField);
 
     if (parseEnteredWeightToInt != null) {
-      return (widget.price * parseEnteredWeightToInt) / defaultWeight;
+      return (widget.product.pricePerKg * parseEnteredWeightToInt) /
+          defaultWeight;
     }
     return defaultPrice;
   }
@@ -191,5 +207,33 @@ class _OrderBodyState extends State<OrderBody> {
   void _desiredWeightFieldRead() {
     _desiredWeightFieldControllerTextNotifier.value =
         _desiredWeightFieldController.text;
+  }
+
+  Future<void> _onSuccess() async {
+    await showMainAlert(context,
+            imagePath: AppImages.iconChecked,
+            body: AppStrings.addToCartIsSuccess,
+            textColor: AppColors.mantis)
+        .whenComplete(() => Navigator.pop(context));
+  }
+
+  Future<void> _onError() async {
+    await showMainAlert(context,
+            imagePath: AppImages.warningIcon,
+            body: AppStrings.warning,
+            textColor: AppColors.coral)
+        .whenComplete(() => Navigator.pop(context));
+  }
+
+  Future<void> _onTap() async {
+    await BlocProvider.of<ProductOrderBloc>(context).addProductToCart(
+        productId: widget.product.productId,
+        desiredWeight: _getDesiredWeight(_desiredWeightFieldController.text),
+        cartPrice: _getFinalPrice(_desiredWeightFieldController.text));
+  }
+
+  double _getDesiredWeight(String text) {
+    var number = text.replaceAll(RegExp('г'), '');
+    return double.parse(number);
   }
 }

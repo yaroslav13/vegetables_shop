@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/loader_indicator/loader_indicator.dart';
+import 'package:vegetable_shop/main.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/pages/home_screen/home_screen.dart';
 import 'package:vegetable_shop/presentation/pages/log_in_page/log_in_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_colors.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
@@ -32,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen>
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           Future.delayed(const Duration(seconds: 2))
-              .then((_) => _navigateToHomeScreen());
+              .then((_) => _navigateToStartScreen());
         }
       });
     _curvedLogoAnimation =
@@ -40,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
     _logoAnimation =
         Tween<double>(begin: 0.0, end: 1.0).animate(_curvedLogoAnimation);
     _curvedTitleAnimation = CurvedAnimation(
-      curve: Curves.bounceIn,
+      curve: Curves.linear,
       parent: _controller,
     );
     _titleAnimation = Tween<Offset>(begin: Offset(5.0, 0.0), end: Offset.zero)
@@ -83,8 +86,22 @@ class _SplashScreenState extends State<SplashScreen>
             style: Theme.of(context).textTheme.headline5),
       ));
 
-  _navigateToHomeScreen() => Navigator.push(
+  _navigateToLogInPage() => Navigator.push(
       context,
       MaterialPageRoute(
           fullscreenDialog: true, builder: (context) => LogInPage()));
+
+  _navigateToHomeScreen() => Navigator.push(
+      context,
+      MaterialPageRoute(
+          fullscreenDialog: true, builder: (context) => HomeScreen()));
+
+  _navigateToStartScreen() async {
+      bool isLogined = await BlocProvider.of<ApplicationBloc>(context).isLogined();
+
+      if(isLogined)
+        _navigateToHomeScreen();
+      else
+        _navigateToLogInPage();
+  }
 }

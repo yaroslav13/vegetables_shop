@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:vegetable_shop/common_widgets/behavior_button/behavior_button.dart';
 import 'package:vegetable_shop/common_widgets/input_field/input_field.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/registration_bloc/registration_bloc.dart';
+import 'package:vegetable_shop/presentation/pages/registration_page/main_profile_information_page.dart';
 import 'package:vegetable_shop/presentation/pages/registration_page/registration_page.dart';
 import 'package:vegetable_shop/presentation/resources/app_strings.dart';
+import 'package:vegetable_shop/utilits/date_converter.dart';
 import 'package:vegetable_shop/utilits/input_formatters.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
 
 const fourthPage = 4;
 
@@ -29,8 +35,7 @@ class _CardProfileInformationPageState
   final TextEditingController _cardHolderNameFieldController =
       TextEditingController();
 
-  final ValueNotifier<bool> _fieldsIsValidNotifier =
-      ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _fieldsIsValidNotifier = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +51,7 @@ class _CardProfileInformationPageState
                 _addPaymentCardDetailsTitle(),
                 InputField(
                   height: 54.0,
+                  width: MediaQuery.of(context).size.width,
                   controller: _cardNumberFieldController,
                   hintText: AppStrings.cardNumberHint,
                   keyboardType: TextInputType.number,
@@ -53,7 +59,7 @@ class _CardProfileInformationPageState
                     WhitelistingTextInputFormatter.digitsOnly,
                     CarNumberFormatter(),
                   ],
-                  onChanged: (_){
+                  onChanged: (_) {
                     _checkButtonState();
                   },
                 ),
@@ -73,7 +79,7 @@ class _CardProfileInformationPageState
                         WhitelistingTextInputFormatter.digitsOnly,
                         ExpireDateTextFormatter(),
                       ],
-                      onChanged: (_){
+                      onChanged: (_) {
                         _checkButtonState();
                       },
                     ),
@@ -87,7 +93,7 @@ class _CardProfileInformationPageState
                         WhitelistingTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(3),
                       ],
-                      onChanged: (_){
+                      onChanged: (_) {
                         _checkButtonState();
                       },
                     ),
@@ -98,9 +104,10 @@ class _CardProfileInformationPageState
                 ),
                 InputField(
                   height: 54.0,
+                  width: MediaQuery.of(context).size.width,
                   controller: _cardHolderNameFieldController,
                   hintText: AppStrings.cardHolderHint,
-                  onChanged: (_){
+                  onChanged: (_) {
                     _checkButtonState();
                   },
                 ),
@@ -137,8 +144,25 @@ class _CardProfileInformationPageState
 
   Future<void> _goToNextRegistrationPage() async {
     if (_fieldsIsNotEmpty()) {
-      await widget.pageController.animateToPage(fourthPage,
-          duration: transitionDuration, curve: transitionCurve);
+      var expireDate = convertExpireDate(_expireDateFieldController.text);
+
+      var paymentCard = PaymentCard.fromPost(
+        _cardNumberFieldController.text,
+        expireDate,
+        _cvvCodeFieldController.text,
+        _cardHolderNameFieldController.text,
+      );
+
+      BlocProvider.of<RegistrationBloc>(context)
+          .postPaymentCard(paymentCard)
+          .then((paymentCardId) async {
+        if (paymentCardId != null) {
+          Auth.paymentCardId = paymentCardId;
+
+          await widget.pageController.animateToPage(fourthPage,
+              duration: transitionDuration, curve: transitionCurve);
+        }
+      });
     }
   }
 

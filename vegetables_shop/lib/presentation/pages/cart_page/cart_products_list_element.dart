@@ -1,42 +1,17 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vegetable_shop/data/models/cart.dart';
+import 'package:vegetable_shop/data/models/product/product.dart';
+import 'package:vegetable_shop/presentation/bloc/bloc_provider.dart';
+import 'package:vegetable_shop/presentation/bloc/cart_bloc/cart_bloc.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
 
-class CartProductsListElement extends StatefulWidget {
-  final bool selected;
-  final int price;
-  final VoidCallback onTap;
-  final int weightOfProduct;
-  final String productName;
+class CartProductsListElement extends StatelessWidget {
+  final Cart cart;
 
-  const CartProductsListElement(
-      {Key key,
-      this.selected,
-      this.onTap,
-      this.price,
-      this.weightOfProduct,
-      this.productName})
+  const CartProductsListElement({Key key, this.cart})
       : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _CartProductsListElementState();
-}
-
-class _CartProductsListElementState extends State<CartProductsListElement> {
-  bool _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.selected ?? false;
-  }
-
-  @override
-  void didUpdateWidget(CartProductsListElement oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _selected = widget.selected ?? false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,45 +22,66 @@ class _CartProductsListElementState extends State<CartProductsListElement> {
         strokeWidth: 1.0,
         dashPattern: [5, 4],
         borderType: BorderType.RRect,
-        child: RaisedButton(
-          elevation: 0.8,
-          color: Colors.white,
-          onPressed: _handlePress,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _productDescription(),
-              _selectedItem(),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _productDescription(context),
+            _selectedItem(context),
+          ],
         ),
       ),
     );
   }
 
-  Padding _productDescription() => Padding(
+  Padding _productDescription(BuildContext context) => Padding(
         padding: const EdgeInsets.all(6.0),
         child: Row(
           children: [
-            Image.asset('assets/cucumber.png', height: 50.0, width: 50.0),
+            FutureBuilder<Product>(
+                future: BlocProvider.of<CartBloc>(context)
+                    .getProductById(cart.productId),
+                builder: (BuildContext context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      height: 60.0,
+                      width: 60.0,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(snapshot.data.productPhoto),
+                      )),
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                }),
             const SizedBox(width: 10.0),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.productName,
-                    style: Theme.of(context).textTheme.bodyText1),
+                FutureBuilder<Product>(
+                    future: BlocProvider.of<CartBloc>(context)
+                        .getProductById(cart.productId),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(snapshot.data.productName,
+                            style: Theme.of(context).textTheme.bodyText1);
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }),
                 const SizedBox(
                   height: 5.0,
                 ),
-                Text('${widget.weightOfProduct} г',
+                Text('${cart.desiredWeight} г',
                     style: Theme.of(context).textTheme.bodyText2.copyWith(
                           fontSize: 16,
                         )),
                 const SizedBox(
                   height: 5.0,
                 ),
-                Text('${widget.price} грн',
+                Text('${cart.cartPrice} грн',
                     style: Theme.of(context)
                         .textTheme
                         .bodyText2
@@ -96,23 +92,14 @@ class _CartProductsListElementState extends State<CartProductsListElement> {
         ),
       );
 
-  Padding _selectedItem() => Padding(
+  Padding _selectedItem(BuildContext context) => Padding(
         padding: const EdgeInsets.only(right: 10.0),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 270),
-          switchOutCurve: Curves.linear,
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            return ScaleTransition(child: child, scale: animation);
-          },
-          child: _selected
-              ? Image.asset(AppImages.iconChecked, width: 30.0, height: 30.0)
-              : Image.asset(AppImages.emptyOval, width: 30.0, height: 30.0),
-        ),
+        child: GestureDetector(
+            onTap: () => _handlePress(context),
+            child: Image.asset(AppImages.trash, width: 30.0, height: 30.0)),
       );
 
-  void _handlePress() {
-    if (widget.onTap != null) {
-      widget.onTap();
-    }
+  void _handlePress(BuildContext context) {
+    BlocProvider.of<CartBloc>(context).deleteCart(cart.productId);
   }
 }

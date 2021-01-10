@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vegetable_shop/presentation/resources/app_images.dart';
@@ -19,8 +21,8 @@ class UserPlaceholder extends StatelessWidget {
           height: height,
           width: weight,
           child: FittedBox(
-              child: imagePath != null
-                  ? NetworkImage(imagePath)
+              child: imagePath != null && imagePath.isNotEmpty
+                  ? FileImage(File(imagePath))
                   : SvgPicture.asset(AppImages.placeholder)),
           decoration: BoxDecoration(
             shape: BoxShape.circle,

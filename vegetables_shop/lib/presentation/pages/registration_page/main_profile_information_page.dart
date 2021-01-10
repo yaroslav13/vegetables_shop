@@ -19,6 +19,16 @@ import 'package:vegetable_shop/presentation/resources/app_strings.dart';
 const double fieldHeight = 54.0;
 const int secondPage = 1;
 
+class Auth {
+  static String name;
+  static String surname;
+  static String email;
+  static String phone;
+  static String photoPath;
+  static int addressId;
+  static int paymentCardId;
+}
+
 class MainProfileInformationPage extends StatefulWidget {
   final PageController pageController;
 
@@ -60,7 +70,7 @@ class _MainProfileInformationPageState
           widthFactor: 0.9,
           child: Column(
             children: [
-              _ProfilePhotoPicker(
+              ProfilePhotoPicker(
                 image: _image,
                 onTap: () {
                   _onProfilePhotoPickerTap();
@@ -71,6 +81,7 @@ class _MainProfileInformationPageState
               ),
               InputField(
                 height: fieldHeight,
+                width: MediaQuery.of(context).size.width,
                 controller: _firstNameFieldController,
                 hintText: AppStrings.firstName,
                 onChanged: (_) {
@@ -82,6 +93,7 @@ class _MainProfileInformationPageState
               ),
               InputField(
                 height: fieldHeight,
+                width: MediaQuery.of(context).size.width,
                 controller: _secondNameFieldController,
                 hintText: AppStrings.secondName,
                 onChanged: (_) {
@@ -93,6 +105,7 @@ class _MainProfileInformationPageState
               ),
               InputField(
                 height: fieldHeight,
+                width: MediaQuery.of(context).size.width,
                 controller: _emailFieldController,
                 hintText: AppStrings.email,
                 onChanged: (_) {
@@ -104,6 +117,7 @@ class _MainProfileInformationPageState
               ),
               InputField(
                 height: fieldHeight,
+                width: MediaQuery.of(context).size.width,
                 controller: _phoneFieldController,
                 prefixIcon: _countryCode(),
                 hintText: AppStrings.telephone,
@@ -184,6 +198,15 @@ class _MainProfileInformationPageState
 
   Future<void> _goToNextRegistrationPage() async {
     if (_fieldsIsNotEmpty()) {
+      Auth.name = _firstNameFieldController.text;
+      Auth.surname = _secondNameFieldController.text;
+      Auth.email = _emailFieldController.text;
+      Auth.phone = _phoneFieldController.text;
+      if(_image == null){
+        Auth.photoPath = "";
+      }else {
+        Auth.photoPath = _image.path;
+      }
       await widget.pageController.animateToPage(secondPage,
           duration: transitionDuration, curve: transitionCurve);
     }
@@ -225,11 +248,11 @@ class _MainProfileInformationPageState
       _emailFieldController.text.trim().isNotEmpty;
 }
 
-class _ProfilePhotoPicker extends StatelessWidget {
+class ProfilePhotoPicker extends StatelessWidget {
   final File image;
   final VoidCallback onTap;
 
-  const _ProfilePhotoPicker({Key key, this.image, this.onTap})
+  const ProfilePhotoPicker({Key key, this.image, this.onTap})
       : super(key: key);
 
   @override

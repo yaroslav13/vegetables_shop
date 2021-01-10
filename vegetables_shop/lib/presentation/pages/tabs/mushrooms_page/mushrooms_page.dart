@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_shop/common_widgets/app_drawer/app_drawer.dart';
 import 'package:vegetable_shop/common_widgets/main_app_bar/main_app_bar.dart';
 import 'package:vegetable_shop/common_widgets/grid_view_section/grid_view_section.dart';
+import 'package:vegetable_shop/data/models/product/product.dart';
 import 'package:vegetable_shop/presentation/bloc/base_screen.dart';
 import 'package:vegetable_shop/presentation/bloc/mushrooms_bloc/mushrooms_bloc.dart';
 
@@ -17,6 +18,13 @@ class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    bloc.getProducts();
+    _searchController.addListener(() => _onSearch(_searchController.text));
+  }
+
+  @override
   PreferredSizeWidget appBar() => MainAppBar(
     searchController: _searchController,
   );
@@ -25,20 +33,27 @@ class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
   Widget drawer() => AppDrawer();
 
   @override
-  Widget body() => GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12.0,
-          childAspectRatio: childAspectRatio,
-          mainAxisSpacing: 12.0),
-      padding: const EdgeInsets.all(12.0),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int i) {
-        return GridViewProductElement(
-          productName: 'Product name',
-          price: 200,
-          country: 'Ukraine',
-        );
+  Widget body() => StreamBuilder<List<Product>>(
+      stream: bloc.searchProducts,
+      initialData: bloc.allMushrooms,
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.hasData) {
+          return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12.0,
+                  childAspectRatio: childAspectRatio,
+                  mainAxisSpacing: 12.0),
+              padding: const EdgeInsets.all(12.0),
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int i) {
+                return GridViewProductElement(
+                  product: snapshot.data[i],
+                );
+              });
+        } else {
+          return SizedBox.shrink();
+        }
       });
 
   @override
@@ -49,4 +64,20 @@ class _MushroomsPageState extends BaseState<MushroomsPage, MushroomsBloc> {
 
   @override
   MushroomsBloc provideBloc() => MushroomsBloc();
+
+  void _onSearch(String request) {
+    if (request == null) {
+      return;
+    }
+    if (request.trim().isNotEmpty) {
+      var searchResult = bloc.allMushrooms
+          ?.where((item) => item.productName
+          .toLowerCase()
+          .startsWith(request.trim().toLowerCase()))
+          ?.toList();
+      bloc.searchProducts.add(searchResult);
+    } else {
+      bloc.searchProducts.add(bloc.allMushrooms);
+    }
+  }
 }

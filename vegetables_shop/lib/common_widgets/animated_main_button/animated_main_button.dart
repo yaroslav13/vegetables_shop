@@ -15,6 +15,7 @@ class AnimatedMainButton extends StatefulWidget {
   final Widget child;
   final UpdateCallback onTap;
   final VoidCallback onDone;
+  final VoidCallback onError;
   final Color textColor;
   final Color mainColor;
 
@@ -26,7 +27,7 @@ class AnimatedMainButton extends StatefulWidget {
       this.onTap,
       this.onDone,
       this.textColor,
-      this.mainColor = AppColors.mantis})
+      this.mainColor = AppColors.mantis, this.onError})
       : super(key: key);
 
   AnimatedMainButton.fromText(String text,
@@ -35,7 +36,7 @@ class AnimatedMainButton extends StatefulWidget {
       this.onTap,
       this.onDone,
       this.textColor = AppColors.surface,
-      this.mainColor = AppColors.mantis})
+      this.mainColor = AppColors.mantis, this.onError})
       : child = Text(text,
             style: TextStyle(
                 fontSize: 14,
@@ -95,6 +96,10 @@ class _AnimatedMainButtonState extends State<AnimatedMainButton> {
     await refreshTap.then((_) {
       if (widget.onDone != null) {
         widget.onDone();
+      }
+    }).catchError((e) {
+      if(widget.onError != null){
+        widget.onError();
       }
     }).whenComplete(() {
       if (mounted) {

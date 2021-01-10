@@ -1,3 +1,42 @@
+import 'package:rxdart/rxdart.dart';
+import 'package:vegetable_shop/data/models/product/product.dart';
+import 'package:vegetable_shop/data/models/product/product_enum.dart';
+import 'package:vegetable_shop/data/use_cases/product_use_case/product_use_case.dart';
 import 'package:vegetable_shop/presentation/bloc/base_bloc.dart';
 
-class MushroomsBloc extends BaseBloc{}
+class MushroomsBloc extends BaseBloc{
+  final ProductUseCase _productUseCase = ProductUseCase();
+
+  final PublishSubject<List<Product>> searchProducts = PublishSubject<List<Product>>();
+  List<Product> allMushrooms = List<Product>();
+
+
+  @override
+  void dispose() {
+    searchProducts.close();
+    super.dispose();
+  }
+
+  Future<void> getProducts() async {
+    try{
+      List<Product> products = await _productUseCase.getProducts();
+      _getMushrooms(products);
+    }catch (e) {
+      print(e);
+    }
+  }
+
+  void _getMushrooms(List<Product> allProducts) {
+    const mushroomsType = ProductType.mushrooms;
+    List<Product> vegetables = List<Product>();
+
+    for(var product in allProducts){
+      if(product.productType == mushroomsType){
+        vegetables.add(product);
+      }
+    }
+
+    allMushrooms.addAll(vegetables);
+    searchProducts.add(vegetables);
+  }
+}

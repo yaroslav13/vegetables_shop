@@ -1,6 +1,9 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:vegetable_shop/data/models/country.dart';
 import 'package:vegetable_shop/data/models/city.dart';
+import 'package:vegetable_shop/data/models/customer.dart';
+import 'package:vegetable_shop/data/repository/user_repository/data_user_repository.dart';
+import 'package:vegetable_shop/data/repository/user_repository/user_repository.dart';
 import 'package:vegetable_shop/data/use_cases/countries_use_case/countries_use_case.dart';
 import 'package:vegetable_shop/data/use_cases/country_cities_use_case/country_cities_use_case.dart';
 
@@ -12,6 +15,7 @@ class RegistrationBloc extends BaseBloc {
 
   final CountriesUseCase _countriesUseCase = CountriesUseCase();
   final CountryCitiesUseCase _citiesUseCase = CountryCitiesUseCase();
+  final UserRepository _userRepository = DataUserRepository();
 
   PublishSubject<List<Country>> searchInCountryStream =
       PublishSubject<List<Country>>();
@@ -30,6 +34,18 @@ class RegistrationBloc extends BaseBloc {
     searchInCitiesStream.close();
     currentCountry.close();
     currentCity.close();
+  }
+
+  Future<int> postUser(Customer customer) {
+    return _userRepository.postUser(customer).catchError(print);
+  }
+
+  Future<int> postAddress(Address address) async {
+    return await _userRepository.postAddress(address);
+  }
+
+  Future<int> postPaymentCard(PaymentCard card) async {
+    return await _userRepository.postPaymentCard(card);
   }
 
   Future<void> loadCountries() async {
