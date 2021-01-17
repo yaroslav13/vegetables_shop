@@ -52,9 +52,9 @@ class Order {
 
     var map = {
       'customer_id': customerId,
-      'order_date': orderDate ,
+      'order_date': orderDate ?? null,
       'pay_by_card': byCard,
-      'total_price': totalPrice,
+      'total_price': totalPrice ?? null,
       'is_processing': isProcessing,
     };
 
